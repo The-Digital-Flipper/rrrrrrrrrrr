@@ -173,21 +173,52 @@
 </div>
 <script>
   (function () {
+    function esc(str) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(String(str)));
+      return d.innerHTML;
+    }
     var raw = localStorage.getItem('aisb_user');
     if (!raw) return;
     try {
       var user = JSON.parse(raw);
       var wrap = document.getElementById('nav-auth');
       if (!wrap || !user.name) return;
-      var avatar = user.picture
-        ? '<img src="' + user.picture + '" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.18)">'
-        : '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#22d3ee);display:grid;place-items:center;font-weight:900;font-size:13px">' + (user.name[0] || '?') + '</div>';
-      wrap.innerHTML =
-        '<div style="display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 14px 6px 6px;background:rgba(255,255,255,.06);backdrop-filter:blur(12px)">' +
-          avatar +
-          '<span style="font-size:14px;font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + user.name + '</span>' +
-        '</div>' +
-        '<button onclick="localStorage.removeItem(\'aisb_user\');location.reload()" style="display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:10px 18px;font-weight:700;font-size:14px;color:#cbd5e1;background:rgba(255,255,255,.05);backdrop-filter:blur(12px);cursor:pointer">Log Out</button>';
+      var nameText = String(user.name).slice(0, 80);
+      var initial = nameText[0] || '?';
+
+      var userCard = document.createElement('div');
+      userCard.setAttribute('style', 'display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:6px 14px 6px 6px;background:rgba(255,255,255,.06);backdrop-filter:blur(12px)');
+
+      if (user.picture && /^https:\/\//.test(user.picture)) {
+        var img = document.createElement('img');
+        img.src = user.picture;
+        img.alt = nameText + "'s profile picture";
+        img.setAttribute('style', 'width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.18)');
+        userCard.appendChild(img);
+      } else {
+        var initDiv = document.createElement('div');
+        initDiv.setAttribute('style', 'width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#22d3ee);display:grid;place-items:center;font-weight:900;font-size:13px');
+        initDiv.textContent = initial;
+        userCard.appendChild(initDiv);
+      }
+
+      var nameSpan = document.createElement('span');
+      nameSpan.setAttribute('style', 'font-size:14px;font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap');
+      nameSpan.textContent = nameText;
+      userCard.appendChild(nameSpan);
+
+      var logoutBtn = document.createElement('button');
+      logoutBtn.setAttribute('style', 'display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:10px 18px;font-weight:700;font-size:14px;color:#cbd5e1;background:rgba(255,255,255,.05);backdrop-filter:blur(12px);cursor:pointer');
+      logoutBtn.textContent = 'Log Out';
+      logoutBtn.addEventListener('click', function () {
+        localStorage.removeItem('aisb_user');
+        location.reload();
+      });
+
+      wrap.innerHTML = '';
+      wrap.appendChild(userCard);
+      wrap.appendChild(logoutBtn);
     } catch (e) {
       localStorage.removeItem('aisb_user');
     }
