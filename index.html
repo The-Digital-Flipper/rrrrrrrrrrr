@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Switchboard</title>
+  <meta name="description" content="AI Switchboard is one browser extension for switching between top AI agents." />
+  <style>
+    :root{
+      --bg:#050A14; --panel:#070C16; --panel2:#09101D; --text:#fff; --muted:#94a3b8;
+      --line:rgba(255,255,255,.10); --blue:#2563eb; --cyan:#22d3ee; --green:#10A37F;
+      --shadow:0 35px 110px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
+    .page{overflow:hidden;min-height:100vh;background:#050A14}
+    .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+    .hero:before{content:"";position:absolute;inset:0;background:
+      radial-gradient(circle at 0% 0%,rgba(37,99,235,.22),transparent 35%),
+      radial-gradient(circle at 100% 25%,rgba(124,58,237,.20),transparent 36%),
+      linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+      background-size:auto,auto,72px 72px,72px 72px;opacity:.95;pointer-events:none}
+    .container{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 24px}
+    header{position:relative;z-index:3;border-bottom:1px solid var(--line);background:rgba(5,10,20,.72);backdrop-filter:blur(24px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+    .brand{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:900;letter-spacing:-.03em}
+    .logo{position:relative;width:48px;height:48px;display:grid;place-items:center}
+    .logo:before{content:"";position:absolute;inset:0;border-radius:21px;background:linear-gradient(135deg,#1A66FF,#14C8FF,#6B4DFF);box-shadow:0 0 38px rgba(37,99,235,.45)}
+    .logo:after{content:"";position:absolute;inset:1.5px;border-radius:20px;background:rgba(6,16,32,.94)}
+    .logo svg{position:relative;z-index:1;width:36px;height:36px;filter:drop-shadow(0 0 14px rgba(0,229,255,.8))}
+    .navlinks{display:flex;gap:34px;color:#cbd5e1;font-size:14px;font-weight:700}
+    .navlinks a:hover{color:#fff}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:16px;padding:16px 24px;font-weight:900;color:#fff;background:linear-gradient(90deg,#3b82f6,#1d4ed8);box-shadow:0 14px 36px rgba(37,99,235,.42);cursor:pointer}
+    .btn.secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);box-shadow:none;backdrop-filter:blur(12px)}
+    .hero-main{display:grid;grid-template-columns:.82fr 1.18fr;gap:64px;align-items:center;padding:88px 0 56px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05);padding:9px 16px;border-radius:999px;color:#dbeafe;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.20em}
+    h1{margin:24px 0 0;font-size:clamp(52px,6.8vw,92px);line-height:.95;letter-spacing:-.06em;font-weight:950}
+    .grad{display:block;background:linear-gradient(90deg,#a78bfa,#3b82f6,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lead{margin:26px 0 0;max-width:670px;color:#cbd5e1;font-size:18px;line-height:1.75;font-weight:550}
+    .cta{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap}
+    .checks{margin-top:34px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:590px}
+    .check{display:flex;gap:9px;color:#cbd5e1;font-size:12px;font-weight:800}.check b{display:block;color:#fff}.dotcheck{color:#d1d5db}
+    .browser{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:24px;padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(24px)}
+    .window{overflow:hidden;border-radius:18px;border:1px solid var(--line);background:#070C16}
+    .chrome{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.045);padding:12px 16px}
+    .circle{width:12px;height:12px;border-radius:999px;background:#475569}.url{margin-left:12px;flex:1;border-radius:999px;background:rgba(0,0,0,.35);padding:9px 16px;font-size:12px;color:#94a3b8}
+    .appgrid{display:grid;grid-template-columns:.82fr 1fr;min-height:455px}
+    .app-left{position:relative;display:grid;place-items:center;border-right:1px solid var(--line);padding:32px}
+    .app-left:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(37,99,235,.18),transparent 55%)}
+    .big-logo{position:relative;margin:0 auto;display:grid;place-items:center;width:96px;height:96px;border-radius:32px;border:1px solid rgba(96,165,250,.25);background:rgba(59,130,246,.10);box-shadow:0 0 45px rgba(37,99,235,.35)}
+    .stats{position:relative;margin-top:38px;text-align:left;display:grid;gap:22px;font-size:14px}
+    .stat{display:flex;gap:12px;align-items:flex-start}.live-dot{margin-top:5px;width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 14px rgba(74,222,128,.85)}
+    .stat b{display:block}.stat span{display:block;color:#64748b;font-size:12px;margin-top:2px}
+    .app-right{padding:16px}.app-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.app-title{display:flex;align-items:center;gap:12px;font-weight:900}
+    .label{margin:16px 0 10px;color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.16em}
+    .active{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:20px;padding:16px}
+    .agent{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:rgba(255,255,255,.065);border-radius:18px;padding:12px 14px;margin-bottom:11px;transition:.2s}
+    .agent:hover{border-color:rgba(103,232,249,.3);background:rgba(255,255,255,.095)}
+    .agent-main{display:flex;align-items:center;gap:12px}.agent-name{font-size:14px;font-weight:900}.agent-sub{margin-top:3px;display:flex;gap:8px;align-items:center;color:#94a3b8;font-size:12px}.bullet{width:4px;height:4px;background:#475569;border-radius:99px}
+    .badge{display:inline-flex;border-radius:999px;background:rgba(52,211,153,.10);color:#6ee7b7;padding:5px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+    .model{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 12px 28px rgba(0,0,0,.25)}
+    .openai{background:#10A37F}.claude{background:#D97757}.google{background:#fff}.meta{background:#0866FF}.perp{background:#20B8CD}.mistral{background:#111827}
+    .model svg{width:25px;height:25px}.model.google svg{width:27px;height:27px}
+    .details{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.detail{border:1px solid rgba(103,232,249,.18);border-radius:16px;padding:12px;background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(34,211,238,.08))}
+    .detail:nth-child(2){border-color:rgba(16,185,129,.22);background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(34,211,238,.08))}
+    .detail:nth-child(3){border-color:rgba(167,139,250,.22);background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(59,130,246,.08))}
+    .detail small{display:block;color:#a5f3fc;text-transform:uppercase;letter-spacing:.16em;font-size:9px;font-weight:900}.detail b{display:block;margin-top:7px;font-size:20px}.detail span{color:#94a3b8;font-size:11px}
+    .status{margin-top:14px;border:1px solid var(--line);background:rgba(0,0,0,.2);border-radius:18px;padding:8px 12px}.status-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0}.status-row:last-child{border-bottom:0}.status-row span:first-child{color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900}.status-row b{font-size:12px;color:#6ee7b7}
+    .brand-row-wrap{margin-top:60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}.brand-row{display:grid;grid-template-columns:180px 1fr;gap:18px;align-items:center}.brand-note{color:#94a3b8;font-size:12px;font-weight:800}
+    .brand-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}.brand-card{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:18px;padding:12px;transition:.2s}.brand-card:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}.brand-card b{font-size:13px}.brand-card span{display:block;color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+    .real-panels{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.real-panel{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:28px;padding:24px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.2em;font-weight:950}.cyan{color:#67e8f9}.green{color:#6ee7b7}.violet{color:#c4b5fd}.real-panel h3{font-size:24px;margin:12px 0 0}.real-panel p{color:#94a3b8;font-size:14px;line-height:1.65}
+    .section{padding:64px 24px}.inner{max-width:1280px;margin:0 auto}.section h2{text-align:center;font-size:34px;margin:0;font-weight:950}
+    .features{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:32px}.feature{background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-radius:22px;padding:24px;box-shadow:0 18px 60px rgba(15,23,42,.07);transition:.2s}.feature:hover{transform:translateY(-4px);box-shadow:0 26px 80px rgba(37,99,235,.16)}.ficon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#eff6ff,#ecfeff);color:#2563eb;margin-bottom:18px}.feature h3{margin:0;font-size:16px}.feature p{color:#475569;font-size:14px;line-height:1.55}
+    .how{background:#09101D;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.howgrid{display:grid;grid-template-columns:.55fr .45fr;gap:34px;align-items:center}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}.step{border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:24px;padding:18px}.step .ficon{background:linear-gradient(135deg,#3b82f6,#22d3ee);color:#fff}.step small{color:#67e8f9;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.18em}.step h3{margin:6px 0;color:#fff}.step p{margin:0;color:#cbd5e1;font-size:12px;line-height:1.55}
+    .backend{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:32px}.backcard{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:26px;padding:24px;box-shadow:0 22px 80px rgba(0,0,0,.2)}.backcard h3{margin:0}.backcard p{color:#94a3b8;font-size:14px;line-height:1.55}.op{color:#4ade80;font-weight:800;font-size:14px}
+    .reviews{background:#fff;color:#0f172a}.review-grid{display:grid;grid-template-columns:.8fr repeat(4,1fr);gap:18px}.review,.summary{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:24px;box-shadow:0 22px 70px rgba(15,23,42,.07)}.g-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #e2e8f0;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700}.rating{display:flex;align-items:end;gap:12px;margin-top:18px}.rating strong{font-size:58px;line-height:.9;letter-spacing:-.08em}.stars{color:#FBBC04}.bar-row{display:grid;grid-template-columns:36px 1fr 46px;align-items:center;gap:10px;color:#64748b;font-size:12px;font-weight:800;margin-top:12px}.bar{height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden}.fill{height:100%;background:#FBBC04}.rhead{display:flex;justify-content:space-between;gap:12px}.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;background:linear-gradient(135deg,#2563eb,#22d3ee)}.who{display:flex;gap:12px}.verified{display:inline-flex;align-items:center;gap:5px;border:1px solid #e2e8f0;border-radius:999px;padding:4px 9px;font-size:11px;color:#475569}.review p{font-size:14px;line-height:1.7;color:#475569}.help{border-top:1px solid #f1f5f9;margin-top:18px;padding-top:14px;display:flex;justify-content:space-between;color:#94a3b8;font-size:12px;font-weight:800}
+    footer{background:#050A14;padding:48px 24px;border-top:1px solid var(--line)}.footgrid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.3fr repeat(4,.8fr);gap:30px}.foot p,.foot div div{color:#94a3b8;font-size:14px;line-height:1.8}.foot h4{margin:0 0 12px}.copy{max-width:1280px;margin:34px auto 0;padding-top:24px;border-top:1px solid var(--line);text-align:center;color:#64748b;font-size:12px}
+    @media(max-width:1100px){.hero-main,.appgrid,.howgrid{grid-template-columns:1fr}.brand-grid,.features,.backend,.review-grid{grid-template-columns:repeat(2,1fr)}.real-panels,.brand-row{grid-template-columns:1fr}.navlinks{display:none}}
+    @media(max-width:700px){.checks,.details,.steps,.features,.backend,.review-grid,.brand-grid,.real-panels,.footgrid{grid-template-columns:1fr}.hero-main{padding-top:54px}h1{font-size:52px}.cta{flex-direction:column}.btn{width:100%}.container{padding:0 18px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <header>
+      <div class="container nav">
+        <div class="brand"><div class="logo"><svg viewBox="0 0 64 64"><path d="M17 20 32 12l15 8M17 32h30M17 44 32 52l15-8" fill="none" stroke="url(#lg)" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="lg" x1="8" y1="8" x2="56" y2="56"><stop stop-color="#BFEAFF"/><stop offset=".45" stop-color="#1E8CFF"/><stop offset="1" stop-color="#7C5CFF"/></linearGradient></defs><circle cx="17" cy="20" r="5" fill="#fff"/><circle cx="47" cy="20" r="5" fill="#4DA3FF"/><circle cx="17" cy="32" r="5" fill="#1E8CFF"/><circle cx="47" cy="32" r="5" fill="#00E5FF"/><circle cx="17" cy="44" r="5" fill="#6B4DFF"/><circle cx="47" cy="44" r="5" fill="#A78BFA"/></svg></div>AI Switchboard</div>
+        <nav class="navlinks"><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#docs">Docs</a><a href="#support">Support</a><a href="#changelog">Changelog</a></nav>
+        <a class="btn" href="#features">Add to Chrome</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="hero-main">
+        <div>
+          <div class="pill">✦ v1.0.0 • Now available for Chrome</div>
+          <h1>One Click.<br>Every AI.<span class="grad">Total Control.</span></h1>
+          <p class="lead">AI Switchboard is your all-in-one AI command center. Instantly connect to multiple AI models, switch between agents, and supercharge your productivity — right from your browser.</p>
+          <div class="cta"><a class="btn" href="#features">ⓖ Add to Chrome — It’s Free</a><a class="btn secondary" href="#docs">View Documentation</a></div>
+          <div class="checks">
+            <div class="check"><span class="dotcheck">♢</span><div><b>100% Free</b><span>Ready</span></div></div>
+            <div class="check"><span class="dotcheck">♢</span><div><b>Open Source</b><span>Ready</span></div></div>
+            <div class="check"><span class="dotcheck">♢</span><div><b>Privacy First</b><span>Ready</span></div></div>
+            <div class="check"><span class="dotcheck">♢</span><div><b>Actively Updated</b><span>Ready</span></div></div>
+          </div>
+        </div>
+
+        <div class="browser">
+          <div class="window">
+            <div class="chrome"><span class="circle"></span><span class="circle"></span><span class="circle"></span><div class="url">Search Google or type a URL</div><span style="color:#64748b">⋮</span></div>
+            <div class="appgrid">
+              <div class="app-left"><div><div class="big-logo"><div class="logo" style="transform:scale(1.25)"></div></div><div class="stats"><div class="stat"><span class="live-dot"></span><div><b>5 Active Agents</b><span>Connected</span></div></div><div class="stat"><span class="live-dot"></span><div><b>1-Click Switching</b><span>Connected</span></div></div><div class="stat"><span class="live-dot"></span><div><b>100% Ready</b><span>Connected</span></div></div></div></div></div>
+              <div class="app-right">
+                <div class="app-head"><div class="app-title"><div class="logo" style="width:36px;height:36px"></div>AI Switchboard</div><span>⇄</span></div>
+                <div class="label">Active Agent</div>
+                <div class="active">
+                  <div class="agent"><div class="agent-main"><div class="model openai"><svg viewBox="0 0 64 64"><g fill="none" stroke="white" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8c7 0 11 4 12 10 5 2 8 6 8 12 0 6-3 10-8 12-1 6-6 10-12 10-7 0-11-4-13-9-6-1-10-6-10-12s4-11 10-13C21 12 26 8 32 8Z"/><path d="M22 19 36 11M44 20v17M43 42 28 52M21 44V27M18 25h17M46 39H29"/></g></svg></div><div><div class="agent-name">GPT-4o</div><div class="agent-sub">OpenAI <span class="bullet"></span> Fast</div></div></div><span class="badge">Default</span></div>
+                  <div class="details"><div class="detail"><small>Route</small><b>Auto</b><span>Best model</span></div><div class="detail"><small>Mode</small><b>Secure</b><span>API proxy</span></div><div class="detail"><small>Sync</small><b>Live</b><span>Instant</span></div></div>
+                </div>
+                <div class="label">AI Agents</div>
+                <div class="agent"><div class="agent-main"><div class="model claude"><svg viewBox="0 0 64 64"><path fill="white" d="M31.5 13 12 51h10.5l3.5-7.5h11.1L40.5 51H52L33.2 13h-1.7Zm-.1 18.2 3.1 6.9h-6.2l3.1-6.9Z"/></svg></div><div><div class="agent-name">Claude 3.5 Sonnet</div><div class="agent-sub">Anthropic <span class="bullet"></span> Deep</div></div></div><span class="badge">Writing</span></div>
+                <div class="agent"><div class="agent-main"><div class="model google"><svg viewBox="0 0 64 64"><path fill="#4285F4" d="M55 33H32v9h13c-2 6-7 10-13 10-8 0-15-7-15-16s7-16 15-16c4 0 7 1 10 4l7-7c-5-4-10-6-17-6-14 0-25 11-25 25s11 25 25 25c14 0 24-10 24-24 0-2 0-3-1-4Z"/></svg></div><div><div class="agent-name">Gemini 1.5 Pro</div><div class="agent-sub">Google <span class="bullet"></span> Live</div></div></div><span class="badge">Research</span></div>
+                <div class="agent"><div class="agent-main"><div class="model meta"><svg viewBox="0 0 64 64"><path fill="none" stroke="white" stroke-width="6" stroke-linecap="round" d="M10 41c4-16 10-24 17-24 5 0 8 4 11 10 4-7 8-10 13-10 8 0 12 8 12 17 0 9-4 17-11 17-6 0-10-6-14-13-5 8-9 13-15 13-8 0-15-4-13-10Z"/></svg></div><div><div class="agent-name">Llama 3.1 70B</div><div class="agent-sub">Meta <span class="bullet"></span> Open</div></div></div><span class="badge">Local</span></div>
+                <div class="agent"><div class="agent-main"><div class="model perp"><svg viewBox="0 0 64 64"><path fill="none" stroke="white" stroke-width="4" d="M15 10v17h14V10h6v17h14V10l8 8v28l-8 8V37H35v17h-6V37H15v17l-8-8V18l8-8Z"/></svg></div><div><div class="agent-name">Perplexity Sonar</div><div class="agent-sub">Perplexity <span class="bullet"></span> Search</div></div></div><span class="badge">Web</span></div>
+                <div class="status"><div class="status-row"><span>Routing Engine</span><b>Online</b></div><div class="status-row"><span>Privacy Layer</span><b>Protected</b></div><div class="status-row"><span>Extension Sync</span><b>Ready</b></div></div>
+                <a class="btn secondary" style="width:100%;margin-top:16px" href="#features">Manage Agents</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-row-wrap"><div class="brand-row"><div class="brand-note">Works with your favorite AI models</div><div class="brand-grid">
+        <div class="brand-card"><div class="model openai"></div><div><b>OpenAI</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model claude"></div><div><b>Anthropic</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model google"></div><div><b>Google</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model meta"></div><div><b>Meta</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model perp"></div><div><b>Perplexity</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model mistral"></div><div><b>Mistral AI</b><span>Available</span></div></div>
+        <div class="brand-card"><div class="model"><b>+</b></div><div><b>+ More</b><span>Available</span></div></div>
+      </div></div></div>
+      <div class="real-panels"><div class="real-panel"><div class="eyebrow cyan">Real workflow</div><h3>Ask once. Compare everywhere.</h3><p>Send a prompt to the best model for the job, then switch to another agent without losing your place.</p></div><div class="real-panel"><div class="eyebrow green">Reliable setup</div><h3>Backend-ready API routing.</h3><p>Keep keys off the client, route requests through your own endpoint, and scale cleanly when usage grows.</p></div><div class="real-panel"><div class="eyebrow violet">Premium control</div><h3>Favorites, history, and modes.</h3><p>A command-center style interface designed to feel like a finished product, not a prototype.</p></div></div>
+    </main>
+  </section>
+
+  <section id="features" class="section"><div class="inner"><h2>Powerful Features</h2><div class="features">
+    <div class="feature"><div class="ficon">⚡</div><h3>One-Click Switch</h3><p>Seamlessly switch between multiple AI models with a single click.</p></div>
+    <div class="feature"><div class="ficon">▦</div><h3>Multi-Agent Support</h3><p>Access top AI models including GPT-4o, Claude, Gemini, Llama, and more.</p></div>
+    <div class="feature"><div class="ficon">◇</div><h3>Secure & Private</h3><p>Keep your workflow protected with a secure backend-ready setup.</p></div>
+    <div class="feature"><div class="ficon">⇄</div><h3>Customizable</h3><p>Configure agents, defaults, and response style for your workflow.</p></div>
+    <div class="feature"><div class="ficon">▱</div><h3>History & Logs</h3><p>Review past interactions and manage conversations with ease.</p></div>
+  </div></div></section>
+
+  <section class="section how"><div class="inner howgrid"><div><h2 style="text-align:left">How It Works</h2><div class="steps"><div class="step"><div class="ficon">↓</div><small>Step 1</small><h3>Install</h3><p>Add AI Switchboard to Chrome.</p></div><div class="step"><div class="ficon">◇</div><small>Step 2</small><h3>Add API Keys</h3><p>Securely add your API keys.</p></div><div class="step"><div class="ficon">▦</div><small>Step 3</small><h3>Choose Agent</h3><p>Select the AI agent you need.</p></div><div class="step"><div class="ficon">✦</div><small>Step 4</small><h3>Start Chatting</h3><p>Open any website and start creating.</p></div></div></div><div class="review"><div class="rhead"><div class="who"><div class="avatar">A</div><div><b>Alex M.</b><br><span style="color:#64748b;font-size:12px">Product Designer</span></div></div><span style="color:#94a3b8;font-size:12px">Verified</span></div><div class="stars" style="margin-top:18px">★★★★★ <b style="color:#64748b;font-size:12px">5.0</b></div><p>“AI Switchboard has completely changed the way I work with AI. So fast and intuitive!”</p><div class="help"><span>Helpful review</span><span>👍 42</span></div></div></div></section>
+
+  <section id="docs" class="section"><div class="inner"><h2>Powered By A Solid Backend</h2><div class="backend"><div class="backcard"><h3>Cloudflare</h3><p>Global CDN and security infrastructure for speed and protection.</p><div class="op">Status: Operational ●</div></div><div class="backcard"><h3>PostgreSQL</h3><p>Reliable database layer for settings, history, and account data.</p><div class="op">Status: Operational ●</div></div><div class="backcard"><h3>Node.js</h3><p>Robust backend runtime for API proxy, auth, and routing.</p><div class="op">Status: Operational ●</div></div><div class="backcard"><h3>Upstash Redis</h3><p>Fast caching and rate limiting for smooth performance.</p><div class="op">Status: Operational ●</div></div></div></div></section>
+
+  <section class="section reviews"><div class="inner review-grid">
+    <div class="summary"><div class="g-badge">G Google Reviews <span style="color:#94a3b8">(8,800)</span></div><div class="rating"><strong>4.9</strong><div><div class="stars">★★★★★</div><div style="font-size:12px;color:#64748b;font-weight:800">Based on 8,800 reviews</div></div></div><div class="bar-row"><span>5 star</span><div class="bar"><div class="fill" style="width:92%"></div></div><span>8,112</span></div><div class="bar-row"><span>4 star</span><div class="bar"><div class="fill" style="width:7%"></div></div><span>532</span></div><div class="bar-row"><span>3 star</span><div class="bar"><div class="fill" style="width:1%"></div></div><span>96</span></div></div>
+    <div class="review"><div class="who"><div class="avatar">J</div><div><b>James Carter</b><br><span class="verified">✓ Verified</span></div></div><div class="stars" style="margin-top:18px">★★★★★</div><p>“This extension is a game changer. Switching between AI models has never been this easy!”</p><div class="help"><span>Helpful review</span><span>👍 24</span></div></div>
+    <div class="review"><div class="who"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">S</div><div><b>Sophia Bennett</b><br><span class="verified">✓ Verified</span></div></div><div class="stars" style="margin-top:18px">★★★★★</div><p>“Super clean interface and works perfectly. Love the one-click agent switching.”</p><div class="help"><span>Helpful review</span><span>👍 18</span></div></div>
+    <div class="review"><div class="who"><div class="avatar" style="background:linear-gradient(135deg,#334155,#3b82f6)">D</div><div><b>Daniel Lee</b><br><span class="verified">✓ Verified</span></div></div><div class="stars" style="margin-top:18px">★★★★★</div><p>“Finally, all my AI models in one place. Saves me so much time every day.”</p><div class="help"><span>Helpful review</span><span>👍 32</span></div></div>
+    <div class="review"><div class="who"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#0f766e)">E</div><div><b>Emily Rodriguez</b><br><span class="verified">✓ Verified</span></div></div><div class="stars" style="margin-top:18px">★★★★★</div><p>“Secure, fast, and reliable. The best AI extension I've used so far.”</p><div class="help"><span>Helpful review</span><span>👍 15</span></div></div>
+  </div></section>
+
+  <footer id="support"><div class="footgrid foot"><div><div class="brand"><div class="logo"></div>AI Switchboard</div><p>Your all-in-one AI command center for the modern world.</p></div><div><h4>Product</h4><div>Features</div><div>Pricing</div><div>Roadmap</div></div><div><h4>Resources</h4><div>Documentation</div><div>API Reference</div><div>Guides</div></div><div><h4>Support</h4><div>Help Center</div><div>Contact Us</div><div>Report a Bug</div></div><div><h4>Legal</h4><div>Privacy Policy</div><div>Terms of Service</div><div>Data Policy</div></div></div><div class="copy">© 2026 AI Switchboard. All rights reserved.</div></footer>
+</div>
+</body>
+</html>
