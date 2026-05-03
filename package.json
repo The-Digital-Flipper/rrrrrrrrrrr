@@ -1,0 +1,13 @@
+{
+  "name": "ai-switchboard",
+  "version": "1.0.0",
+  "description": "AI Switchboard – landing page for the Chrome extension that switches between AI agents.",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}
