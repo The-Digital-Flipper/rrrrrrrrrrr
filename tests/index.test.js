@@ -47,6 +47,13 @@ describe('Page metadata', () => {
 // Navigation
 // ---------------------------------------------------------------------------
 describe('Navigation', () => {
+  let navLabels;
+
+  beforeEach(() => {
+    const links = Array.from(document.querySelectorAll('.navlinks a'));
+    navLabels = links.map(a => a.textContent.trim());
+  });
+
   test('brand/logo is present', () => {
     const brand = document.querySelector('.brand');
     expect(brand).not.toBeNull();
@@ -54,33 +61,23 @@ describe('Navigation', () => {
   });
 
   test('navigation contains Features link', () => {
-    const links = Array.from(document.querySelectorAll('.navlinks a'));
-    const labels = links.map(a => a.textContent.trim());
-    expect(labels).toContain('Features');
+    expect(navLabels).toContain('Features');
   });
 
   test('navigation contains Pricing link', () => {
-    const links = Array.from(document.querySelectorAll('.navlinks a'));
-    const labels = links.map(a => a.textContent.trim());
-    expect(labels).toContain('Pricing');
+    expect(navLabels).toContain('Pricing');
   });
 
   test('navigation contains Docs link', () => {
-    const links = Array.from(document.querySelectorAll('.navlinks a'));
-    const labels = links.map(a => a.textContent.trim());
-    expect(labels).toContain('Docs');
+    expect(navLabels).toContain('Docs');
   });
 
   test('navigation contains Support link', () => {
-    const links = Array.from(document.querySelectorAll('.navlinks a'));
-    const labels = links.map(a => a.textContent.trim());
-    expect(labels).toContain('Support');
+    expect(navLabels).toContain('Support');
   });
 
   test('navigation contains Changelog link', () => {
-    const links = Array.from(document.querySelectorAll('.navlinks a'));
-    const labels = links.map(a => a.textContent.trim());
-    expect(labels).toContain('Changelog');
+    expect(navLabels).toContain('Changelog');
   });
 
   test('"Add to Chrome" CTA button is present in header', () => {
@@ -168,29 +165,31 @@ describe('Hero section', () => {
 // Agent list (mock browser UI)
 // ---------------------------------------------------------------------------
 describe('Agent list', () => {
+  let agentNames;
+
+  beforeEach(() => {
+    agentNames = Array.from(document.querySelectorAll('.agent-name'))
+      .map(el => el.textContent);
+  });
+
   test('GPT-4o is listed', () => {
-    const agents = Array.from(document.querySelectorAll('.agent-name'));
-    expect(agents.some(el => el.textContent.includes('GPT-4o'))).toBe(true);
+    expect(agentNames.some(name => name.includes('GPT-4o'))).toBe(true);
   });
 
   test('Claude is listed', () => {
-    const agents = Array.from(document.querySelectorAll('.agent-name'));
-    expect(agents.some(el => el.textContent.includes('Claude'))).toBe(true);
+    expect(agentNames.some(name => name.includes('Claude'))).toBe(true);
   });
 
   test('Gemini is listed', () => {
-    const agents = Array.from(document.querySelectorAll('.agent-name'));
-    expect(agents.some(el => el.textContent.includes('Gemini'))).toBe(true);
+    expect(agentNames.some(name => name.includes('Gemini'))).toBe(true);
   });
 
   test('Llama is listed', () => {
-    const agents = Array.from(document.querySelectorAll('.agent-name'));
-    expect(agents.some(el => el.textContent.includes('Llama'))).toBe(true);
+    expect(agentNames.some(name => name.includes('Llama'))).toBe(true);
   });
 
   test('Perplexity is listed', () => {
-    const agents = Array.from(document.querySelectorAll('.agent-name'));
-    expect(agents.some(el => el.textContent.includes('Perplexity'))).toBe(true);
+    expect(agentNames.some(name => name.includes('Perplexity'))).toBe(true);
   });
 
   test('GPT-4o is the default agent', () => {
@@ -226,40 +225,39 @@ describe('Agent list', () => {
 // Brand grid (supported AI providers)
 // ---------------------------------------------------------------------------
 describe('Supported AI providers grid', () => {
+  let brandCards;
+
+  beforeEach(() => {
+    brandCards = Array.from(document.querySelectorAll('.brand-card'));
+  });
+
   test('OpenAI brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('OpenAI'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('OpenAI'))).toBe(true);
   });
 
   test('Anthropic brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('Anthropic'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('Anthropic'))).toBe(true);
   });
 
   test('Google brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('Google'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('Google'))).toBe(true);
   });
 
   test('Meta brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('Meta'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('Meta'))).toBe(true);
   });
 
   test('Perplexity brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('Perplexity'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('Perplexity'))).toBe(true);
   });
 
   test('Mistral AI brand card is present', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.some(c => c.textContent.includes('Mistral AI'))).toBe(true);
+    expect(brandCards.some(c => c.textContent.includes('Mistral AI'))).toBe(true);
   });
 
   test('all brand cards show "Available" status', () => {
-    const cards = Array.from(document.querySelectorAll('.brand-card'));
-    expect(cards.length).toBeGreaterThanOrEqual(6);
-    cards.slice(0, 6).forEach(card => {
+    expect(brandCards.length).toBeGreaterThanOrEqual(6);
+    brandCards.slice(0, 6).forEach(card => {
       expect(card.textContent).toContain('Available');
     });
   });
